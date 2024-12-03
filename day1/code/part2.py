@@ -47,6 +47,7 @@ def split_input(clean_lines: List[str]) -> Tuple[List[int], Dict[int, int]]:
         arr1.append(first_number)
         arr2.append(second_number)
 
+    # returns the count of each element
     map2 = Counter(arr2)
 
     return (arr1, map2)
