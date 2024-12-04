@@ -52,9 +52,6 @@ def validator(nos_list: list[int]) -> bool:
     if nos1 > nos2:
         is_asc = False
 
-    if (abs(nos1 - nos2) < 1) and (abs(nos1 - nos2) > 3):
-        return False
-
     # print(is_asc)
     for index in range(1, len(nos_list)):
         nos_prev = nos_list[index - 1]
@@ -67,11 +64,11 @@ def validator(nos_list: list[int]) -> bool:
 
         if is_asc:
             # When ascending the prev should always be smaller than cur
-            if (nos_prev >= nos_cur) or (diff < 1 or diff > 3):
+            if nos_prev >= nos_cur:
                 return False
         else:
             # When descending the prev should always be greater than cur
-            if (nos_prev <= nos_cur) or (diff < 1 or diff > 3):
+            if nos_prev <= nos_cur:
                 return False
 
     return True
