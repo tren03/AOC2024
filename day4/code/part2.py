@@ -122,7 +122,7 @@ if __name__ == "__main__":
     SAMPLE_INPUT_FILE = "../input/sample.txt"
     MAIN_INPUT_FILE = "../input/main.txt"
 
-    CUR_INPUT = MAIN_INPUT_FILE
+    CUR_INPUT = SAMPLE_INPUT_FILE
 
     temp_list: list[str] = []
     for line in get_data(CUR_INPUT):
