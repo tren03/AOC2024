@@ -13,6 +13,7 @@ class Guard:
     position: tuple[int, int]
     direction: Direction
     dimensions: tuple[int, int]
+    next_position: tuple[int, int]
 
     def __init__(
         self,
@@ -35,6 +36,16 @@ class Guard:
 
     def right(self):
         self.position = (self.position[0], self.position[1] + 1)
+
+    def get_next_pos(self):
+        if self.direction == Direction.UP:
+            self.next_position = (self.position[0] - 1, self.position[1])
+        if self.direction == Direction.DOWN:
+            self.next_position = (self.position[0] + 1, self.position[1])
+        if self.direction == Direction.RIGHT:
+            self.next_position = (self.position[0], self.position[1] + 1)
+        if self.direction == Direction.LEFT:
+            self.next_position = (self.position[0], self.position[1] - 1)
 
     def ahead(self):
         """
@@ -68,29 +79,37 @@ class Guard:
         """
         if self.direction == Direction.UP:
             self.direction = Direction.RIGHT
+            return
+
         if self.direction == Direction.RIGHT:
             self.direction = Direction.DOWN
+            return
+
         if self.direction == Direction.DOWN:
             self.direction = Direction.LEFT
+            return
+
         if self.direction == Direction.LEFT:
             self.direction = Direction.UP
+            return
 
-    def isValid(self) -> bool:
-        """
-        checks if position is valid
-        """
-        max_row = self.dimensions[0]
-        max_col = self.dimensions[1]
 
-        cur_row = self.position[0]
-        cur_col = self.position[1]
+def isValid(row: int, col: int, dim: int) -> bool:
+    """
+    checks if position is valid
+    """
+    max_row = dim
+    max_col = dim
 
-        if cur_row < 0 or cur_row >= max_row:
-            return False
-        if cur_col < 0 or cur_col >= max_col:
-            return False
+    cur_row = row
+    cur_col = col
 
-        return True
+    if cur_row < 0 or cur_row >= max_row:
+        return False
+    if cur_col < 0 or cur_col >= max_col:
+        return False
+
+    return True
 
 
 # Takes a string and removes newline at the end of the string
@@ -132,28 +151,27 @@ def convert_to_2d_matix(str_list: list[str], dim: int) -> list[list[str]]:
 
 def simulation(g: Guard, map: list[list[str]]) -> int:
     # just keep calling ahead until we get invalid index
-    ans = 0
+    visited = set()
     while True:
-        if not g.isValid():
+        g.get_next_pos()
+        if not isValid(g.position[0], g.position[1], len(map)):
             break
-        cur_row = g.position[0]
-        cur_col = g.position[1]
-        if map[cur_row][cur_col] == "#":
-            g.back()
-            g.rotate()
-            continue
+
+        if isValid(g.next_position[0], g.next_position[1], len(map)):
+            if map[g.next_position[0]][g.next_position[1]] == "#":
+                g.rotate()
+
+        visited.add(g.position)
         g.ahead()
 
-        ans += 1
-        print(g.position, g.direction)
-    return ans
+    return len(visited)
 
 
 def main():
     SAMPLE_INPUT_FILE = "../input/sample.txt"
     MAIN_INPUT_FILE = "../input/main.txt"
 
-    CUR_INPUT = SAMPLE_INPUT_FILE
+    CUR_INPUT = MAIN_INPUT_FILE
 
     temp_list: list[str] = []
     for line in get_data(CUR_INPUT):
@@ -162,7 +180,7 @@ def main():
     dim = len(temp_list)
     print(f"dimentsions : {dim}")
     matrix = convert_to_2d_matix(temp_list, dim)
-    print(matrix)
+    # print(matrix)
 
     g = None
     for i in range(0, dim):
