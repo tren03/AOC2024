@@ -14,7 +14,7 @@ class Guard:
     direction: Direction
     dimensions: tuple[int, int]
 
-    def __self__(
+    def __init__(
         self,
         initial_pos: tuple[int, int],
         initial_direction: Direction,
@@ -38,7 +38,7 @@ class Guard:
 
     def ahead(self):
         """
-        moves based on the direction and position
+        moves ahead one position based on the direction and position
         """
         if self.direction == Direction.UP:
             self.up()
@@ -47,6 +47,19 @@ class Guard:
         if self.direction == Direction.RIGHT:
             self.right()
         if self.direction == Direction.LEFT:
+            self.left()
+
+    def back(self):
+        """
+        moves back one position based on the direction and position
+        """
+        if self.direction == Direction.DOWN:
+            self.up()
+        if self.direction == Direction.UP:
+            self.down()
+        if self.direction == Direction.LEFT:
+            self.right()
+        if self.direction == Direction.RIGHT:
             self.left()
 
     def rotate(self):
@@ -117,9 +130,23 @@ def convert_to_2d_matix(str_list: list[str], dim: int) -> list[list[str]]:
     return matrix
 
 
-def simulation(g: Guard) -> int:
+def simulation(g: Guard, map: list[list[str]]) -> int:
+    # just keep calling ahead until we get invalid index
+    ans = 0
+    while True:
+        if not g.isValid():
+            break
+        cur_row = g.position[0]
+        cur_col = g.position[1]
+        if map[cur_row][cur_col] == "#":
+            g.back()
+            g.rotate()
+            continue
+        g.ahead()
 
-    pass
+        ans += 1
+        print(g.position, g.direction)
+    return ans
 
 
 def main():
@@ -137,11 +164,17 @@ def main():
     matrix = convert_to_2d_matix(temp_list, dim)
     print(matrix)
 
+    g = None
     for i in range(0, dim):
         for j in range(0, dim):
             if matrix[i][j] == "^":
-                g: Guard = Guard((i, j), Direction.UP, (dim, dim))
+                g = Guard((i, j), Direction.UP, (dim, dim))
                 break
+
+    if not g:
+        print("carrot not found")
+    else:
+        print(simulation(g, matrix))
 
 
 if __name__ == "__main__":
