@@ -24,6 +24,7 @@ def get_data(filepath: str) -> list[str]:
 
 
 def rec(i: int, sym: str):
+    """Recursively get all permutations of chars of string given"""
     if i == len(sym):
         return
     i_true: str = sym
